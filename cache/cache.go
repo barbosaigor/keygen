@@ -6,7 +6,7 @@ import "github.com/barbosaigor/keygen"
 // For the cache size is recommended to set up a large enough size, to avoid
 // calculating the keys every time.
 type Cache struct {
-	key *keygen.Key
+	key *keygen.KeyGenerator
 	// Keys has a in-memory set of keys.
 	Keys []string
 	// Length represent the current number of elements.
