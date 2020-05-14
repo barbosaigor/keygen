@@ -1,20 +1,46 @@
 package keygen
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 var symbols = []rune{'a', 'b', 'c', 'd', 'e', 'f', 'g'}
 
-func newKey() *Key {
+func newKey() *KeyGenerator {
 	return NewWithCustomSymbols(symbols, 5)
 }
 
 func TestNew(t *testing.T) {
+	key := New(10)
+	if len(key.Symbols) != len(Base64Symbols) {
+		t.Errorf("New has an incorrect length of symbols, expected %v but got %v", len(Base64Symbols), key.Current())
+	}
+	if cap(key.data) != 10 {
+		t.Errorf("New has an incorrect capacity of data, expected %v but got %v", 10, cap(key.data))
+	}
+}
+
+func TestNewWithCustomSymbols(t *testing.T) {
 	key := newKey()
 	if len(key.Symbols) != len(symbols) {
-		t.Errorf("New has an incorrect length of symbols, expected %v but got %v", len(symbols), key.Current())
+		t.Errorf("NewWithCustomSymbols has an incorrect length of symbols, expected %v but got %v", len(symbols), key.Current())
 	}
-	if cap(key.Data) != 5 {
-		t.Errorf("New has an incorrect capacity of data, expected %v but got %v", 5, cap(key.Data))
+	if cap(key.data) != 5 {
+		t.Errorf("NewWithCustomSymbols has an incorrect capacity of data, expected %v but got %v", 5, cap(key.data))
+	}
+	customSymbols := []rune{'a', 'b', 'c', 'd', 'a', 'c'}
+	key = NewWithCustomSymbols(customSymbols, 5)
+	if key != nil {
+		t.Errorf("NewWithCustomSymbols should return nil if symbols are non unique, expected %v but got %v", nil, key)
+	}
+	key = NewWithCustomSymbols(nil, 5)
+	if !reflect.DeepEqual(key.Symbols, Base64Symbols) {
+		t.Error("NewWithCustomSymbols keygenerator Symbols should hold base64 symbols")
+	}
+	key = NewWithCustomSymbols([]rune{}, 5)
+	if key != nil {
+		t.Errorf("NewWithCustomSymbols should return nil if symbols are non unique, expected %v but got %v", nil, key)
 	}
 }
 
